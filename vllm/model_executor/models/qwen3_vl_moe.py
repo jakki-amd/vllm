@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
@@ -27,6 +29,7 @@
 import typing
 from collections.abc import Callable, Iterable
 from itertools import islice
+from typing import TYPE_CHECKING
 
 import torch
 from transformers.models.qwen3_vl_moe.configuration_qwen3_vl_moe import (
@@ -44,7 +47,9 @@ from vllm.model_executor.model_loader.weight_utils import (
     maybe_remap_kv_scale_name,
 )
 from vllm.multimodal import MULTIMODAL_REGISTRY
-from vllm.sequence import IntermediateTensors
+
+if TYPE_CHECKING:
+    from vllm.sequence import IntermediateTensors
 
 from .interfaces import MixtureOfExperts
 from .qwen3_moe import (
@@ -128,6 +133,7 @@ class Qwen3MoeLLMModel(Qwen3MoeModel):
                 )
 
         if not get_pp_group().is_last_rank:
+            from vllm.sequence import IntermediateTensors
             return IntermediateTensors(
                 {"hidden_states": hidden_states, "residual": residual}
             )
